@@ -78,13 +78,13 @@ for counter = 1:130
         dtheta = pinv(J)*Vt;
     end
 
-    %for i = 1:n
-    %    k = h(:,i);
-    %    R = RotateBy(k,dtheta(i));
-    %    x(:,i:n) = R*x(:,i:n);
-    %    y(:,i:n) = R*y(:,i:n);
-    %    z(:,i:n) = R*z(:,i:n);
-    %end
+    for i = 1:n
+        k = h(:,i);
+        R = RotateBy(k,dtheta(i));
+        x(:,i:n) = R*x(:,i:n);
+        y(:,i:n) = R*y(:,i:n);
+        z(:,i:n) = R*z(:,i:n);
+    end
 
     obstacle_pos = [0.3, 0.3, 0.3];
     
