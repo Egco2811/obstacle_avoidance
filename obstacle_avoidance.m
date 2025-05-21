@@ -88,5 +88,6 @@ for counter = 1:130
     %end
 
     obstacle_pos = [0.3, 0.3, 0.3];
+    safety_parameter = 0.5;
     
 end
