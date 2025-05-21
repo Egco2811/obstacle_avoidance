@@ -30,7 +30,7 @@ for counter = 1:130
     end
 
     for i = 1:n
-        phi(6*i+(-2:0),6*i+(-5:-3)) = [0 L(3,i) -L(2,i); -L(3,i) 0 L(1,i); L(2,i) -L(1,i) 0];
+        phi(6*i+(-2:0),6*i+(-5:-3)) = SkewSymmetric(L(:,n));
     end
     for i = 3:n+1
         for j = 1:i-2
@@ -38,7 +38,7 @@ for counter = 1:130
         end
     end
 
-    phi_t(4:6,6*n+(-5:-3)) = [0 L(3,n) -L(2,n); -L(3,n) 0 L(1,n); L(2,n) -L(1,n) 0];
+    phi_t(4:6,6*n+(-5:-3)) = SkewSymmetric(L(:,n));
 
     J=phi_t*phi*H;
 
@@ -80,7 +80,7 @@ for counter = 1:130
 
     %for i = 1:n
     %    k = h(:,i);
-    %    khat = [0 -k(3) k(2); k(3) 0 -k(1); -k(2) k(1) 0];
+    %    khat = SkewSymmetric(k);
     %    R = eye(3) + sin(dtheta(i))*khat + (1-cos(dtheta(i)))*khat^2;
     %    x(:,i:n) = R*x(:,i:n);
     %    y(:,i:n) = R*y(:,i:n);
