@@ -80,8 +80,7 @@ for counter = 1:130
 
     %for i = 1:n
     %    k = h(:,i);
-    %    khat = SkewSymmetric(k);
-    %    R = eye(3) + sin(dtheta(i))*khat + (1-cos(dtheta(i)))*khat^2;
+    %    R = RotateBy(k,dtheta(i));
     %    x(:,i:n) = R*x(:,i:n);
     %    y(:,i:n) = R*y(:,i:n);
     %    z(:,i:n) = R*z(:,i:n);
