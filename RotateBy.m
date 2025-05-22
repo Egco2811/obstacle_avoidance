@@ -1,3 +1,5 @@
+%% Created by Egco 21/05/2025 
+
 function RotationMatrix = RotateBy(axis,radian)
     axis = axis(:) / norm(axis);
     khat = SkewSymmetric(axis);
