@@ -31,6 +31,7 @@ axis off
 set(gcf, 'color', [0 0 0]);
 hold on
 
+links = Link.empty(0, n);
 for i = 1:n
    phi = phi + diag(ones(6*(n-i),1),-6*i);
    links(i) = Link(cumulative_link_positions(:, i), ...
