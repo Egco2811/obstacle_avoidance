@@ -38,6 +38,7 @@ for i = 1:n
                    cumulative_link_positions(:, i+1), ...
                    rotation_axes(i), ...
                    link_colors(i));
+   links(i).joint_color_ = link_colors(i);
    links(i).PlotJoints()
    links(i).PlotLink()
 end
