@@ -13,8 +13,9 @@ classdef Link
     end
 
     methods
-        function obj = Link(start_point, end_point, rotation_axis, link_color, line_width, ...
-                joint_marker, joint_size, joint_color)
+        function obj = Link(start_point, end_point, rotation_axis, ...
+                            link_color, line_width, joint_marker, ...
+                            joint_size, joint_color)
             if nargin < 1, start_point = [0; 0; 0]; end
             if nargin < 2, end_point = [0; 0; 0]; end
             if nargin < 3, rotation_axis = [0; 0; 0;]; end
