@@ -20,9 +20,9 @@ classdef Link
             if nargin < 2, end_point = [0; 0; 0]; end
             if nargin < 3, rotation_axis = [0; 0; 0;]; end
             if nargin < 4, link_color = 'b'; end
-            if nargin < 5, line_width = 4; end
+            if nargin < 5, line_width = 3; end
             if nargin < 6, joint_marker = 'o'; end
-            if nargin < 7, joint_size = 6; end
+            if nargin < 7, joint_size = 1; end
             if nargin < 8, joint_color = 'b'; end
             obj.start_point_ = start_point;
             obj.end_point_ = end_point;
