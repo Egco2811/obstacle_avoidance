@@ -13,11 +13,11 @@ H = zeros(6*n, n);
 link_colors = ['b', 'r', 'r', 'g', 'g', 'w', 'w', 'g'];
 
 obstacle_pos = [0.7, 0.7, 0.7];
-safety_parameter = 0.2;
+safety_perimeter = 0.2;
 [radius_x, radius_y, radius_z] = sphere();
-obstacle_x = radius_x * safety_parameter + obstacle_pos(1);
-obstacle_y = radius_y * safety_parameter + obstacle_pos(2);
-obstacle_z = radius_z * safety_parameter + obstacle_pos(3);
+obstacle_x = radius_x * safety_perimeter + obstacle_pos(1);
+obstacle_y = radius_y * safety_perimeter + obstacle_pos(2);
+obstacle_z = radius_z * safety_perimeter + obstacle_pos(3);
 
 base_link = Link([-.1, 0, 0], [.1, 0, 0], x, link_colors(1));
 base_link_column = Link(o, [0, 0, .1], x, link_colors(1));
@@ -121,7 +121,7 @@ for counter = 1:130
         distance_to_obstacle = LineToPointDistance(links(i).end_point_, ...
             links(i).start_point_, ...
             obstacle_pos);
-        if (distance_to_obstacle > safety_parameter)
+        if (distance_to_obstacle > safety_perimeter)
             display("Link "+i+" Distance to Safety Zone: "+distance_to_obstacle)
             k = rotation_axes(:, i);
             R = RotateBy(k, dtheta(i));
