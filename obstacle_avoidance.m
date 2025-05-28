@@ -12,17 +12,15 @@ z(3, :) = ones(1, n);
 H = zeros(6*n, n);
 link_colors = ['b', 'r', 'r', 'g', 'g', 'w', 'w', 'g'];
 
-obstacle_pos = [0.3, 0.3, 0.3];
-safety_parameter = 0.1;
-obstacle_link = Link(obstacle_pos, ...
-    obstacle_pos, ...
-    x, ...
-    'r', ...
-    1, ...
-    'o', ...
-    safety_parameter, ...
-    'r');
+obstacle_pos = [0.7, 0.7, 0.7];
+safety_parameter = 0.2;
+[radius_x, radius_y, radius_z] = sphere();
+obstacle_x = radius_x * safety_parameter + obstacle_pos(1);
+obstacle_y = radius_y * safety_parameter + obstacle_pos(2);
+obstacle_z = radius_z * safety_parameter + obstacle_pos(3);
 
+base_link = Link([-.1, 0, 0], [.1, 0, 0], x, link_colors(1));
+base_link_column = Link(o, [0, 0, .1], x, link_colors(1));
 phi = eye(6*n);
 
 axis_max = .9;
@@ -43,7 +41,6 @@ phi_t(:, 6*n+(-5:0)) = eye(6);
 Vt = zeros(6, 1);
 dtheta = 0.07 * [rand, rand, rand, rand, rand, rand, rand]';
 for counter = 1:130
-    obstacle_link.PlotJoints
     link_dimensions = [[0; 0; 0.1], ...
         .1135 * z(:, 1), ...
         .307 * x(:, 2), ...
@@ -97,6 +94,22 @@ for counter = 1:130
         links(i).PlotJoints
         p1 = p2;
     end
+    k1 = .03;
+    k2 = .02;
+    actuator_link_1 = Link(links(n).end_point_, links(n).end_point_-k1*y(:, n)');
+    actuator_link_2 = Link(links(n).end_point_, links(n).end_point_+k1*y(:, n)');
+    actuator_link_3 = Link(actuator_link_1.end_point_, actuator_link_1.end_point_+k2*x(:, n)');
+    actuator_link_4 = Link(actuator_link_2.end_point_, actuator_link_2.end_point_+k2*x(:, n)');
+    base_link.PlotLink
+    base_link_column.PlotLink
+    actuator_link_1.PlotLink
+    actuator_link_2.PlotLink
+    actuator_link_3.PlotLink
+    actuator_link_4.PlotLink
+    surf(obstacle_x, obstacle_y, obstacle_z, ...
+        'FaceColor', 'r', ...
+        'EdgeColor', 'none', ...
+        'FaceAlpha', 0.4);
     drawnow;
 
     if counter > 10
