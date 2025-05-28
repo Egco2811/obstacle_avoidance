@@ -115,7 +115,7 @@ for counter = 1:130
             y(:, i:n) = R * y(:, i:n);
             z(:, i:n) = R * z(:, i:n);
         else
-            display("Link "+i+"is inside the unsafe perimeter.")
+            display("Link "+i+" is inside the unsafe perimeter.")
             display("Link Position: X "+links(i).start_point_(1))
             display("Link Position: Y "+links(i).start_point_(2))
             display("Link Position: Z "+links(i).start_point_(3))
