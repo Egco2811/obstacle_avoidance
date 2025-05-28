@@ -1,3 +1,4 @@
+clear; clc;
 n = 7;
 o = zeros(3,1);
 x = zeros(3,n); x(1,:) = ones(1,n);
@@ -5,32 +6,56 @@ y = zeros(3,n); y(2,:) = ones(1,n);
 z = zeros(3,n); z(3,:) = ones(1,n);
 
 H = zeros(6*n,n);
+link_colors=['b' 'r' 'r' 'g' 'g' 'w' 'w' 'g'];
 
 phi = eye(6*n);
-for i = 1:n
-   phi = phi + diag(ones(6*(n-i),1),-6*i);
-end
 
-phi_t=zeros(6,6*n); phi_t(:,6*n+(-5:0))=eye(6);
-
-xcolor=['b' 'r' 'r' 'g' 'g' 'w' 'w' 'g'];
 axis_max=.9;
 axis([-axis_max axis_max -axis_max axis_max -axis_max axis_max]);
 axis off
 set(gcf, 'color', [0 0 0]);
 hold on
 
+links = Link.empty(0, n);
+for i = 1:n
+   phi = phi + diag(ones(6*(n-i),1),-6*i);
+end
+%%
+phi_t=zeros(6,6*n); phi_t(:,6*n+(-5:0))=eye(6);
+
 Vt=zeros(6,1);
 dtheta=0.07*[rand rand rand rand rand rand rand]';
 for counter = 1:130
-    L = [.1135*z(:,1)  .307*x(:,2)  .143*x(:,3)  .255*z(:,4)  .245*z(:,5)  .08*x(:,6) o];
-    h = [z(:,1) y(:,2) x(:,3) y(:,4) z(:,5) y(:,6) x(:,7)];
+    link_dimensions = [[0; 0; 0.1] ...
+                   .1135*z(:,1) ...
+                   .307*x(:,2) ...
+                   .143*x(:,3) ... 
+                   .255*z(:,4) ...
+                   .245*z(:,5) ...
+                   .08*x(:,6) o];
+     rotation_axes = [z(:,1) ...
+                 y(:,2) ...
+                 x(:,3) ...
+                 y(:,4) ...
+                 z(:,5) ...
+                 y(:,6) ...
+                 x(:,7)];
+     cumulative_link_positions = cumsum(link_dimensions, 2);
     for i = 1:n
-        H(6*i+(-5:-3),i) = h(:,i);
+      links(i) = Link(cumulative_link_positions(:, i), ...
+                   cumulative_link_positions(:, i+1), ...
+                   rotation_axes(i), ...
+                   link_colors(i));
+      links(i).joint_color_ = link_colors(i);
+      links(i).PlotJoints()
+      links(i).PlotLink()
+    end
+    for i = 1:n
+        H(6*i+(-5:-3),i) = rotation_axes(:,i);
     end
 
     for i = 1:n
-        phi(6*i+(-2:0),6*i+(-5:-3)) = [0 L(3,i) -L(2,i); -L(3,i) 0 L(1,i); L(2,i) -L(1,i) 0];
+        phi(6*i+(-2:0),6*i+(-5:-3)) = SkewSymmetric(link_dimensions(:,n));
     end
     for i = 3:n+1
         for j = 1:i-2
@@ -38,24 +63,24 @@ for counter = 1:130
         end
     end
 
-    phi_t(4:6,6*n+(-5:-3)) = [0 L(3,n) -L(2,n); -L(3,n) 0 L(1,n); L(2,n) -L(1,n) 0];
+    phi_t(4:6,6*n+(-5:-3)) = SkewSymmetric(link_dimensions(:,n));
 
     J=phi_t*phi*H;
 
     cla
     p = [-.1 0 0; .1 0 0];
-    plot3(p(:,1), p(:,2), p(:,3), xcolor(1), 'LineWidth', 2);
+    plot3(p(:,1), p(:,2), p(:,3), link_colors(1), 'LineWidth', 2);
     p1 = o';
     p2 = [0 0 .1];
     p = [p1;p2];
-    plot3(p(:,1), p(:,2), p(:,3), xcolor(1), 'LineWidth', 2);
+    plot3(p(:,1), p(:,2), p(:,3), link_colors(1), 'LineWidth', 2);
     p1 = p2;
     for i = 1:n
-        p2 = p1 + L(:,i)';
+        p2 = p1 + link_dimensions(:,i)';
         p = [p1;p2];
-        plot3(p(:,1), p(:,2), p(:,3), xcolor(i), 'LineWidth', 6);
+        plot3(p(:,1), p(:,2), p(:,3), link_colors(i), 'LineWidth', 6);
         if (i < n-1)
-            plot3(p2(1), p2(2), p2(3), [xcolor(i) 'o'], 'LineWidth', 4);
+            plot3(p2(1), p2(2), p2(3), [link_colors(i) 'o'], 'LineWidth', 4);
         end
         p1 = p2;
     end
@@ -64,13 +89,13 @@ for counter = 1:130
     p1 = p1 - k1*y(:,n)';
     p2 = p2 + k1*y(:,n)';
     p = [p1;p2];
-    plot3(p(:,1), p(:,2), p(:,3), xcolor(7), 'LineWidth', 3);
+    plot3(p(:,1), p(:,2), p(:,3), link_colors(7), 'LineWidth', 3);
     p3 = p1 + k2*x(:,n)';
     p = [p1;p3];
-    plot3(p(:,1), p(:,2), p(:,3), xcolor(7), 'LineWidth', 3);
+    plot3(p(:,1), p(:,2), p(:,3), link_colors(7), 'LineWidth', 3);
     p3 = p2 + k2*x(:,n)';
     p = [p2;p3];
-    plot3(p(:,1), p(:,2), p(:,3), xcolor(7), 'LineWidth', 3);
+    plot3(p(:,1), p(:,2), p(:,3), link_colors(7), 'LineWidth', 3);
     drawnow;
 
     if counter>10
@@ -78,14 +103,13 @@ for counter = 1:130
         dtheta = pinv(J)*Vt;
     end
 
-    %for i = 1:n
-    %    k = h(:,i);
-    %    khat = [0 -k(3) k(2); k(3) 0 -k(1); -k(2) k(1) 0];
-    %    R = eye(3) + sin(dtheta(i))*khat + (1-cos(dtheta(i)))*khat^2;
-    %    x(:,i:n) = R*x(:,i:n);
-    %    y(:,i:n) = R*y(:,i:n);
-    %    z(:,i:n) = R*z(:,i:n);
-    %end
+    for i = 1:n
+        k = rotation_axes(:,i);
+        R = RotateBy(k,dtheta(i));
+        x(:,i:n) = R*x(:,i:n);
+        y(:,i:n) = R*y(:,i:n);
+        z(:,i:n) = R*z(:,i:n);
+    end
 
     obstacle_pos = [0.3, 0.3, 0.3];
     safety_parameter = 0.5;
