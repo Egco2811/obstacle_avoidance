@@ -27,7 +27,6 @@ links = Link.empty(0, n);
 for i = 1:n
     phi = phi + diag(ones(6*(n - i), 1), -6*i);
 end
-
 %%
 phi_t = zeros(6, 6*n);
 phi_t(:, 6*n+(-5:0)) = eye(6);
@@ -113,11 +112,14 @@ for counter = 1:130
     end
 
     for i = 1:n
-        k = rotation_axes(:, i);
-        R = RotateBy(k, dtheta(i));
-        x(:, i:n) = R * x(:, i:n);
-        y(:, i:n) = R * y(:, i:n);
-        z(:, i:n) = R * z(:, i:n);
+        distance_to_obstacle = LineToPointDistance(links(i).end_point_, links(i).start_point_, obstacle_pos);
+        if (distance_to_obstacle > safety_parameter)
+            k = rotation_axes(:, i);
+            R = RotateBy(k, dtheta(i));
+            x(:, i:n) = R * x(:, i:n);
+            y(:, i:n) = R * y(:, i:n);
+            z(:, i:n) = R * z(:, i:n);
+        end
     end
 
 end
