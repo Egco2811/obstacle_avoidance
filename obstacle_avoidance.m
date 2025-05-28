@@ -35,7 +35,6 @@ links = Link.empty(0, n);
 for i = 1:n
     phi = phi + diag(ones(6*(n - i), 1), -6*i);
 end
-
 %%
 phi_t = zeros(6, 6*n);
 phi_t(:, 6*n+(-5:0)) = eye(6);
@@ -105,15 +104,21 @@ for counter = 1:130
     end
 
     for i = 1:n
-        distance_to_obstacle = LineToPointDistance(links(i).end_point_, links(i).start_point_, obstacle_pos);
+        distance_to_obstacle = LineToPointDistance(links(i).end_point_, ...
+            links(i).start_point_, ...
+            obstacle_pos);
         if (distance_to_obstacle > safety_parameter)
+            display("Distance to Safety Zone: "+distance_to_obstacle)
             k = rotation_axes(:, i);
             R = RotateBy(k, dtheta(i));
             x(:, i:n) = R * x(:, i:n);
             y(:, i:n) = R * y(:, i:n);
             z(:, i:n) = R * z(:, i:n);
         else
-
+            display("Link "+i+"is inside the unsafe perimeter.")
+            display("Link Position: X "+links(i).start_point_(1))
+            display("Link Position: Y "+links(i).start_point_(2))
+            display("Link Position: Z "+links(i).start_point_(3))
         end
     end
 
