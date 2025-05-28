@@ -13,7 +13,15 @@ H = zeros(6*n, n);
 link_colors = ['b', 'r', 'r', 'g', 'g', 'w', 'w', 'g'];
 
 obstacle_pos = [0.3, 0.3, 0.3];
-safety_parameter = 0.5;
+safety_parameter = 0.1;
+obstacle_link = Link(obstacle_pos, ...
+    obstacle_pos, ...
+    x, ...
+    'r', ...
+    1, ...
+    'o', ...
+    safety_parameter, ...
+    'r');
 
 phi = eye(6*n);
 
@@ -35,6 +43,7 @@ phi_t(:, 6*n+(-5:0)) = eye(6);
 Vt = zeros(6, 1);
 dtheta = 0.07 * [rand, rand, rand, rand, rand, rand, rand]';
 for counter = 1:130
+    obstacle_link.PlotJoints
     link_dimensions = [[0; 0; 0.1], ...
         .1135 * z(:, 1), ...
         .307 * x(:, 2), ...
@@ -59,6 +68,7 @@ for counter = 1:130
         links(i).PlotJoints()
         links(i).PlotLink()
     end
+
     for i = 1:n
         H(6*i+(-5:-3), i) = rotation_axes(:, i);
     end
@@ -77,34 +87,16 @@ for counter = 1:130
     J = phi_t * phi * H;
 
     cla
-    p = [-.1, 0, 0; .1, 0, 0];
-    plot3(p(:, 1), p(:, 2), p(:, 3), link_colors(1), 'LineWidth', 2);
-    p1 = o';
-    p2 = [0, 0, .1];
-    p = [p1; p2];
-    plot3(p(:, 1), p(:, 2), p(:, 3), link_colors(1), 'LineWidth', 2);
-    p1 = p2;
+    p1 = [0, 0, .1];
+    p2 = p1;
     for i = 1:n
         p2 = p1 + link_dimensions(:, i)';
-        p = [p1; p2];
-        plot3(p(:, 1), p(:, 2), p(:, 3), link_colors(i), 'LineWidth', 6);
-        if (i < n-1)
-            plot3(p2(1), p2(2), p2(3), [link_colors(i), 'o'], 'LineWidth', 4);
-        end
+        links(i).start_point_ = p1;
+        links(i).end_point_ = p2;
+        links(i).PlotLink
+        links(i).PlotJoints
         p1 = p2;
     end
-    k1 = .03;
-    k2 = .02;
-    p1 = p1 - k1 * y(:, n)';
-    p2 = p2 + k1 * y(:, n)';
-    p = [p1; p2];
-    plot3(p(:, 1), p(:, 2), p(:, 3), link_colors(7), 'LineWidth', 3);
-    p3 = p1 + k2 * x(:, n)';
-    p = [p1; p3];
-    plot3(p(:, 1), p(:, 2), p(:, 3), link_colors(7), 'LineWidth', 3);
-    p3 = p2 + k2 * x(:, n)';
-    p = [p2; p3];
-    plot3(p(:, 1), p(:, 2), p(:, 3), link_colors(7), 'LineWidth', 3);
     drawnow;
 
     if counter > 10
@@ -121,6 +113,7 @@ for counter = 1:130
             y(:, i:n) = R * y(:, i:n);
             z(:, i:n) = R * z(:, i:n);
         else
+
         end
     end
 
