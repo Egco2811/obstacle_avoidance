@@ -165,6 +165,8 @@ for counter = 1:130
             x(:, i:n) = R * x(:, i:n);
             y(:, i:n) = R * y(:, i:n);
             z(:, i:n) = R * z(:, i:n);
+        else
+            %avoidance algorithm
         end
     end
 end
