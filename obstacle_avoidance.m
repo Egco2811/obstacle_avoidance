@@ -12,8 +12,8 @@ z(3, :) = ones(1, n);
 H = zeros(6*n, n);
 link_colors = ['b', 'r', 'r', 'g', 'g', 'w', 'w', 'g'];
 
-obstacle_pos = [0.7, 0.7, 0.7];
-safety_perimeter = 0.2;
+obstacle_pos = [0.3, 0.3, 0.3];
+safety_perimeter = 0.1;
 [radius_x, radius_y, radius_z] = sphere();
 obstacle_x = radius_x * safety_perimeter + obstacle_pos(1);
 obstacle_y = radius_y * safety_perimeter + obstacle_pos(2);
@@ -33,7 +33,6 @@ links = Link.empty(0, n);
 for i = 1:n
     phi = phi + diag(ones(6*(n - i), 1), -6*i);
 end
-
 %%
 phi_t = zeros(6, 6*n);
 phi_t(:, 6*n+(-5:0)) = eye(6);
