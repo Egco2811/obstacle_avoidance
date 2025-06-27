@@ -36,6 +36,7 @@ links = Link.empty(0, n);
 for i = 1:n
     phi = phi + diag(ones(6*(n - i), 1), -6*i);
 end
+
 %%
 phi_t = zeros(6, 6*n);
 phi_t(:, 6*n+(-5:0)) = eye(6);
@@ -168,74 +169,66 @@ for counter = 1:130
         else
             L1 = link_dimensions(:, 1:first_violating_link_index);
             h1 = rotation_axes(:, 1:first_violating_link_index);
-            num_joints_1 = first_violating_link_index;
+            first_violating_link_index;
 
             L2 = link_dimensions(:, (first_violating_link_index + 1):n);
             h2 = rotation_axes(:, (first_violating_link_index + 1):n);
-            num_joints_2 = n - first_violating_link_index;
+            first_free_link = n - first_violating_link_index;
 
-            H1 = zeros(6*num_joints_1, num_joints_1);
-            phi1 = eye(6*num_joints_1);
-            for i = 1:num_joints_1
-                phi1 = phi1 + diag(ones(6*(num_joints_1 - i), 1), -6*i);
+            H1 = zeros(6*first_violating_link_index, first_violating_link_index);
+            phi1 = eye(6*first_violating_link_index);
+            for i = 1:first_violating_link_index
+                phi1 = phi1 + diag(ones(6*(first_violating_link_index - i), 1), -6*i);
             end
-            phi_t1 = zeros(6, 6*num_joints_1);
-            phi_t1(:, 6*num_joints_1+(-5:0)) = eye(6);
+            phi_t1 = zeros(6, 6*first_violating_link_index);
+            phi_t1(:, 6*first_violating_link_index+(-5:0)) = eye(6);
 
-            for i = 1:num_joints_1
+            for i = 1:first_violating_link_index
                 H1(6*i+(-5:-3), i) = h1(:, i);
             end
-            for i = 1:num_joints_1
+            for i = 1:first_violating_link_index
                 phi1(6*i+(-2:0), 6*i+(-5:-3)) = SkewSymmetric(L1(:, i));
             end
-            for i = 3:num_joints_1 + 1
+            for i = 3:first_violating_link_index + 1
                 for j = 1:i - 2
                     phi1(6*i+(-8:-6), 6*j+(-5:-3)) = phi1(6*i+(-8:-6), 6*i+(-11:-9)) + phi1(6*i+(-14:-12), 6*j+(-5:-3));
                 end
             end
-            phi_t1(4:6, 6*num_joints_1+(-5:-3)) = SkewSymmetric(L1(:, end));
+            phi_t1(4:6, 6*first_violating_link_index+(-5:-3)) = SkewSymmetric(L1(:, end));
             J1 = phi_t1 * phi1 * H1;
 
-            H2 = zeros(6*num_joints_2, num_joints_2);
-            phi2 = eye(6*num_joints_2);
-            for i = 1:num_joints_2
-                phi2 = phi2 + diag(ones(6*(num_joints_2 - i), 1), -6*i);
+            H2 = zeros(6*first_free_link, first_free_link);
+            phi2 = eye(6*first_free_link);
+            for i = 1:first_free_link
+                phi2 = phi2 + diag(ones(6*(first_free_link - i), 1), -6*i);
             end
-            phi_t2 = zeros(6, 6*num_joints_2);
-            phi_t2(:, 6*num_joints_2+(-5:0)) = eye(6);
+            phi_t2 = zeros(6, 6*first_free_link);
+            phi_t2(:, 6*first_free_link+(-5:0)) = eye(6);
 
-            for i = 1:num_joints_2
+            for i = 1:first_free_link
                 H2(6*i+(-5:-3), i) = h2(:, i);
             end
-            for i = 1:num_joints_2
+            for i = 1:first_free_link
                 phi2(6*i+(-2:0), 6*i+(-5:-3)) = SkewSymmetric(L2(:, i));
             end
-            for i = 3:num_joints_2 + 1
+            for i = 3:first_free_link + 1
                 for j = 1:i - 2
                     phi2(6*i+(-8:-6), 6*j+(-5:-3)) = phi2(6*i+(-8:-6), 6*i+(-11:-9)) + phi2(6*i+(-14:-12), 6*j+(-5:-3));
                 end
             end
-            phi_t2(4:6, 6*num_joints_2+(-5:-3)) = SkewSymmetric(L2(:, end));
+            phi_t2(4:6, 6*first_free_link+(-5:-3)) = SkewSymmetric(L2(:, end));
             J2 = phi_t2 * phi2 * H2;
-
             p_start = links(first_violating_link_index).start_point_;
             p_end = links(first_violating_link_index).end_point_;
             critical_point = LineToPointDistance(p_start, p_end, obstacle_pos');
-
             avoidance_vec = critical_point - obstacle_pos';
             avoidance_dir = avoidance_vec / (norm(avoidance_vec) + eps);
             avoidance_speed = 0.008;
             avoidance_velocity = avoidance_speed * avoidance_dir;
-
             Vt1 = [0; 0; 0; avoidance_velocity];
-
             dtheta1 = pinv(J1) * Vt1;
-
-
             Vt_residual = Vt - J1 * dtheta1;
-
             dtheta2 = pinv(J2) * Vt_residual;
-
             dtheta = [dtheta1; dtheta2];
         end
     end
